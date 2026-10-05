@@ -66,20 +66,6 @@ Two tables, intentionally separated by **update frequency**, not just by subject
 - **`employee`** — static attributes (age, department, salary, job level, etc.) plus `replacement_cost` (job-level-based multiplier × annual salary). Changes rarely.
 - **`employee_prediction_history`** — one row per model run per employee (surrogate `prediction_id` as primary key). Keeps a full history so HR can compare month-over-month and see whether an intervention reduced an employee's risk.
 
-```sql
-CREATE TABLE employee_prediction_history (
-    prediction_id INT AUTO_INCREMENT PRIMARY KEY,
-    employee_id INT NOT NULL,
-    prediction_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    attrition_probability DECIMAL(5,4),
-    risk_label VARCHAR(20),
-    top_driver_1 VARCHAR(50), top_driver_1_impact DECIMAL(5,3),
-    top_driver_2 VARCHAR(50), top_driver_2_impact DECIMAL(5,3),
-    top_driver_3 VARCHAR(50), top_driver_3_impact DECIMAL(5,3),
-    CONSTRAINT fk_employee FOREIGN KEY (employee_id) REFERENCES employee(employee_id)
-);
-```
-
 A `latest_prediction` **view** (using `ROW_NUMBER() OVER (PARTITION BY employee_id ORDER BY prediction_timestamp DESC)`) surfaces only the most recent prediction per employee — used by the dashboard, while the base table retains full history.
 
 ### Design decisions worth noting
