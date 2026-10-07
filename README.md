@@ -51,7 +51,7 @@ Kaggle Dataset → Python (Model + SHAP) → MySQL (Storage) → Power BI (Dashb
 - Default 0.5 replaced with **0.4**, chosen via explicit cost-asymmetry reasoning: a missed at-risk employee (False Negative) costs a full replacement (1.5–2x salary); a false alarm (False Positive) costs only HR's time. Recall prioritized accordingly.
 - Binary classification only (High Risk / Low Risk) — no "Medium" tier implemented.
 
-### Explainability — SHAP
+### Explainability - SHAP
 - `shap.TreeExplainer(model)` - no background data needed/used (tree-based explainer).
 - Per-employee **top-3 risk drivers** extracted using **absolute SHAP value** (not raw descending sort) — ensures strong protective factors (negative SHAP) aren't excluded in favor of weaker risk-increasing ones.
 - **Known calibration caveat:** because `class_weight='balanced'` shifts the model's internal probability scale, raw probabilities are a **relative risk ranking**, not literal "X% chance of resigning."
