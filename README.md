@@ -77,12 +77,12 @@ A `latest_prediction` **view** (using `ROW_NUMBER() OVER (PARTITION BY employee_
 
 ## 4. Monthly Prediction Pipeline (Python)
 
-A **separate notebook** from training — mirrors a real training/inference pipeline split:
+A **separate notebook** from training - mirrors a real training/inference pipeline split:
 
 1. Load saved artifacts: `model.pkl`, `mappings.pkl`, `encoder.pkl`, `feature_cols.pkl`
 2. Pull current employee data from MySQL (not a manually maintained CSV)
 3. Apply the **exact same transformation pipeline** used during training (same mappings, same fitted encoder, same column order)
-4. Predict on **all employees** (not just the original test split — production inference needs every current employee, train/test is a modeling-evaluation concept only)
+4. Predict on **all employees** (not just the original test split - production inference needs every current employee, train/test is a modeling-evaluation concept only)
 5. Extract top-3 SHAP drivers per employee
 6. Append the batch to `employee_prediction_history` in MySQL
 
