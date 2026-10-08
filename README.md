@@ -41,7 +41,7 @@ Kaggle Dataset → Python (Model + SHAP) → MySQL (Storage) → Power BI (Dashb
 
 ### Class Imbalance
 - `class_weight='balanced'` used instead of SMOTE - simpler, no synthetic data, appropriate for a dataset this size (only 237 minority examples).
-- Combined with threshold tuning, achieved 83% recall without needing a more complex/riskier technique.
+- Combined with threshold tuning, achieved 85% recall without needing a more complex/riskier technique.
 
 ### Models
 - **Logistic Regression** - interpretable baseline/benchmark (not the final model). Required `StandardScaler` (coefficient-based, scale-sensitive).
