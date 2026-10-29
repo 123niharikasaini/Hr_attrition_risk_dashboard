@@ -48,8 +48,8 @@ Kaggle Dataset → Python (Model + SHAP) → MySQL (Storage) → Power BI (Dashb
 - **Random Forest** - final model. No scaling needed (threshold-based splits are scale-invariant). Tuned via `GridSearchCV` with `scoring='recall'` (not accuracy — accuracy rewards ignoring the minority class on imbalanced data).
 
 ### Threshold Tuning
-- Default 0.5 replaced with **0.4**, chosen via explicit cost-asymmetry reasoning: a missed at-risk employee (False Negative) costs a full replacement (1.5–2x salary); a false alarm (False Positive) costs only HR's time. Recall prioritized accordingly.
-- Binary classification only (High Risk / Low Risk) — no "Medium" tier implemented.
+- Default 0.5 replaced with **0.4**, chosen via explicit cost-asymmetry reasoning: a missed at-risk employee (False Negative) costs a full replacement (1.5–2x salary); a false alarm (False Positive) costs only HR's time. Recall prioritized accordingly. Employees at or above 0.40 are flagged as at-risk (Medium or High); the 85% recall refers to this combined flagged group.
+- Three-tier risk labels: Low (< 0.40), Medium (0.40 – 0.60), High (≥ 0.60). The 0.40 flag threshold is recall-tuned (cost-asymmetry reasoning above); the 0.60 High cutoff is a business assumption, not model-tuned.
 
 ### Explainability - SHAP
 - `shap.TreeExplainer(model)` - no background data needed/used (tree-based explainer).
@@ -98,7 +98,7 @@ Connected via **Import mode** (MySQL Connector/NET), department-level slicer wit
 - KPI cards: Total Employees, Overall Attrition Risk Rate, High Risk Count, Total Replacement Cost Exposure
 - Attrition Risk by Department / Job Role / Job Level (stacked bar)
 - **Top Factors Driving Attrition Risk** and **Top Factors Reducing Attrition Risk** - built from a long-format transformation (`Unpivot`) of the three wide `top_driver_*` columns, ranked by **employee count** (not average impact), since HR acts on factors affecting the most people, not the single strongest outlier case
-- Employee-level detail table (High Risk employees, their drivers, department, replacement cost)
+- Employee-level detail table (Medium + High Risk employees, their drivers, department, replacement cost)
 
 ---
 
@@ -106,6 +106,7 @@ Connected via **Import mode** (MySQL Connector/NET), department-level slicer wit
 
 - [ ] Empirically test whether outlier-capping changes Logistic Regression's recall (currently assumed negligible, not tested)
 - [ ] Group one-hot encoded sub-columns (e.g. `JobRole_Sales Executive`, `JobRole_Research Scientist`) back to their parent feature (`JobRole`) for cleaner, business-readable SHAP driver labels
+- [ ] 0.60 High-risk cutoff is an assumption; validate against actual attrition outcomes once real follow-up data is available.
 - [ ] Month-over-month trend visual - schema supports it (full prediction history is retained), but not enough historical runs exist yet to populate it meaningfully
 - [ ] Race-condition-safe employee inserts (`INSERT IGNORE` / `ON DUPLICATE KEY UPDATE`) if this pipeline is ever automated/scheduled, replacing the current single-run Python-side duplicate check
 - [ ] Formally verify feature-interaction hypotheses (e.g. `DistanceFromHome` × `MonthlyIncome`) via SHAP dependence plots
